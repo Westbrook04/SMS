@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button, Checkbox, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { login } from '../api/authApi'
 import '../App.css'
@@ -73,8 +73,19 @@ export default function LoginPage() {
     document.body.style.margin = '0'
     document.body.style.padding = '0'
     document.body.style.overflow = 'hidden'
-    // 登录页加载时，确保窗口是登录页大小
     window.electronAPI.resizeWindow(465, 425)
+
+    // 读取记住的密码
+    const savedUsername = localStorage.getItem('saved_username')
+    const savedPassword = localStorage.getItem('saved_password')
+    const rememberMe = localStorage.getItem('remember_me') === 'true'
+    if (rememberMe && savedUsername) {
+      form.setFieldsValue({
+        username: savedUsername,
+        password: savedPassword || '',
+        remember: true,
+      })
+    }
   }, [])
 
 
@@ -89,7 +100,7 @@ export default function LoginPage() {
     setCaptcha(generateCaptcha())
   }
 
-  const handleLogin = async (values: { username: string; password: string; captchaInput: string }) => {
+  const handleLogin = async (values: { username: string; password: string; captchaInput: string; remember?: boolean }) => {
     // 先验证验证码（不区分大小写）
     if (values.captchaInput.toUpperCase() !== captcha.toUpperCase()) {
       message.error('验证码错误')
@@ -108,6 +119,18 @@ export default function LoginPage() {
         localStorage.setItem('sms_token', data.token)
         localStorage.setItem('sms_username', data.username)
         localStorage.setItem('sms_logged_in', 'true')
+
+        // 记住密码
+        if (values.remember) {
+          localStorage.setItem('remember_me', 'true')
+          localStorage.setItem('saved_username', values.username)
+          localStorage.setItem('saved_password', values.password)
+        } else {
+          localStorage.removeItem('remember_me')
+          localStorage.removeItem('saved_username')
+          localStorage.removeItem('saved_password')
+        }
+
         window.electronAPI.resizeWindow(1200, 800)
         navigate('/', { replace: true })
       } else {
@@ -163,6 +186,11 @@ export default function LoginPage() {
                 title="点击刷新验证码"
               />
             </div>
+          </Form.Item>
+
+          {/* 记住密码 */}
+          <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: 12 }}>
+            <Checkbox>记住密码</Checkbox>
           </Form.Item>
 
           {/* 登录按钮 */}
