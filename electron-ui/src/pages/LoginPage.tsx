@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { login } from '../api/authApi'
 import '../App.css'
 /**
  * 生成随机验证码（4位数字+字母，排除易混淆字符）
@@ -96,14 +97,27 @@ export default function LoginPage() {
 
     setLoading(true)
 
-    // 模拟登录（后面再对接真正的后端接口）
-    setTimeout(() => {
-      message.success('登录成功！')
-      localStorage.setItem('sms_logged_in', 'true')
-      window.electronAPI.resizeWindow(1200, 800)
+    try {
+      const res = await login(values.username, values.password)
+      const { success, data, error } = res.data
+
+      if (success && data) {
+        message.success('登录成功！')
+        localStorage.setItem('sms_token', data.token)
+        localStorage.setItem('sms_username', data.username)
+        localStorage.setItem('sms_logged_in', 'true')
+        window.electronAPI.resizeWindow(1200, 800)
+        navigate('/', { replace: true })
+      } else {
+        message.error(error || '登录失败')
+        handleRefreshCaptcha()
+      }
+    } catch {
+      message.error('无法连接到服务器，请检查后端是否启动')
+      handleRefreshCaptcha()
+    } finally {
       setLoading(false)
-      navigate('/', { replace: true })
-    }, 1000)
+    }
   }
 
   return (

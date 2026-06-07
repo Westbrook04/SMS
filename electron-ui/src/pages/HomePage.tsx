@@ -13,7 +13,9 @@ const { Header, Sider, Content } = Layout
 const LOGIN_KEY = 'sms_logged_in'
 
 export function checkAuth(): boolean {
+  // 必须同时有登录标记 和 token，才算已登录（过滤掉旧版模拟登录的残留数据）
   return localStorage.getItem(LOGIN_KEY) === 'true'
+      && localStorage.getItem('sms_token') !== null
 }
 
 function setLoggedIn() {
@@ -22,6 +24,8 @@ function setLoggedIn() {
 
 function clearAuth() {
   localStorage.removeItem(LOGIN_KEY)
+  localStorage.removeItem('sms_token')
+  localStorage.removeItem('sms_username')
 }
 
 export { setLoggedIn, clearAuth }
