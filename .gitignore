@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Electron UI / Node ###
+electron-ui/node_modules/
+electron-ui/out/
+electron-ui/dist/
+
+### 参考素材 ###
+参考素材/

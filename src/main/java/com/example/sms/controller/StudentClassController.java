@@ -4,6 +4,7 @@ import com.example.sms.entity.StudentClass;
 import com.example.sms.service.StudentClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.example.sms.dto.ClassWithCountResponse;
 
 import java.util.List;
 
@@ -18,9 +19,10 @@ public class StudentClassController {
      * @return
      */
     @GetMapping
-    public List<StudentClass> getAllStudentClasses() {
+    public List<ClassWithCountResponse> getAllStudentClasses() {
         return studentClassService.findAll();
     }
+
 
     @GetMapping("/{classId}")
     public StudentClass getStudentClass(@PathVariable String classId) {

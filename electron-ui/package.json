@@ -1,0 +1,33 @@
+{
+  "name": "electron-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "electron": "^42.3.3",
+    "electron-builder": "^26.15.0",
+    "electron-vite": "^6.0.0-beta.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.2.5",
+    "antd": "^6.4.3",
+    "axios": "^1.17.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.17.0"
+  }
+}
