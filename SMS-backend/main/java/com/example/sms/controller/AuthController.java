@@ -21,6 +21,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody LoginRequest request) {
+        System.out.println("登录请求 - 用户名: " + request.username() + ", 密码: " + request.password());
         AuthService.LoginResult result = authService.login(request.username(), request.password());
 
         Map<String, Object> response = new HashMap<>();
