@@ -20,6 +20,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws Exception {
 
+        // 放行 OPTIONS 预检请求（CORS 需要，不带 token）
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 从请求头取出 token: "Authorization: Bearer xxxxxxx"
         String authHeader = request.getHeader("Authorization");
 

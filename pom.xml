@@ -67,6 +67,13 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>SMS-backend/main/java</sourceDirectory>
+        <testSourceDirectory>SMS-backend/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>SMS-backend/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
