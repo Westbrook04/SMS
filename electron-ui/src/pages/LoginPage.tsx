@@ -73,6 +73,8 @@ export default function LoginPage() {
     document.body.style.margin = '0'
     document.body.style.padding = '0'
     document.body.style.overflow = 'hidden'
+    // 登录页加载时，确保窗口是登录页大小
+    window.electronAPI.resizeWindow(465, 425)
   }, [])
 
 

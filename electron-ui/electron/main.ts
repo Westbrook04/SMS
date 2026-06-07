@@ -36,8 +36,10 @@ function createWindow() {
  */
 ipcMain.on('resize-window',(_event,width:number,height: number)=>{
     if(mainWindow){
+        mainWindow.setResizable(true)
         mainWindow.setSize(width,height)
         mainWindow.center()
+        mainWindow.setResizable(false)
     }
 })
 
