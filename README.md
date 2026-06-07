@@ -8,15 +8,30 @@
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License MIT"/>
 </p>
 
-Spring Boot + Electron 学习项目，实现学生和班级的增删改查，带管理员登录和 Token 鉴权。
+一个以经典学生管理系统为载体的 **全栈技术复习与实践项目**。
+
+本科欠下的基本功，工作之后一点一点补回来。通过从零搭建一个带登录鉴权的完整 CRUD 应用，把 Java、Spring Boot、MySQL 到现代前端（React + Electron）的整条链路跑通、跑透。
+
+> 系统本身不复杂，复杂的是把每一层都想明白。
 
 ## 技术栈
 
-| 层 | 技术 |
-|----|------|
-| 后端 | Spring Boot 3.x + JPA + MySQL |
-| 前端 | Electron + React + TypeScript + Vite |
-| 鉴权 | UUID Token + BCrypt 密码加密 |
+| 层 | 技术 | 目的 |
+|----|------|------|
+| 后端框架 | Spring Boot 3.x + JPA | 接口开发、ORM、分层架构 |
+| 数据库 | MySQL 8.0 | 数据持久化 |
+| 前端框架 | React + TypeScript + Ant Design | 组件化 UI 开发 |
+| 桌面壳 | Electron 31 | 桌面应用打包与窗口管理 |
+| 鉴权 | UUID Token + BCrypt | 登录态管理、密码加密 |
+| 构建 | Maven + Vite | 后端/前端构建 |
+
+## 功能
+
+- 管理员登录（含验证码）
+- 全接口 Token 鉴权（24 小时过期）
+- 班级管理（新增、删除、人数统计）
+- 学生管理（新增、编辑、删除、按班级归类）
+- 窗口自适应（登录页 465x425 / 主页 1200x800 自动切换）
 
 ## 快速开始
 
