@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate, useLocation, NavLink } from 'react-router-dom'
-import { Layout, Menu, Button, theme } from 'antd'
+import { Layout, Menu, Button, theme, Modal } from 'antd'
 import {
   TeamOutlined,
   BookOutlined,
@@ -56,8 +56,17 @@ export default function HomePage() {
     : 'classes'
 
   const handleLogout = () => {
-    clearAuth()
-    navigate('/login', { replace: true })
+    Modal.confirm({
+      title: '确认退出登录？',
+      content: '退出后需要重新输入账号密码。',
+      okText: '确认退出',
+      cancelText: '取消',
+      onOk: () => {
+        clearAuth()
+        window.electronAPI.resizeWindow(465, 425)
+        navigate('/login', { replace: true })
+      },
+    })
   }
 
   const menuItems = [
