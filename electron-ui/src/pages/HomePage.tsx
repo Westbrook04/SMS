@@ -5,6 +5,7 @@ import {
   TeamOutlined,
   BookOutlined,
   LogoutOutlined,
+  PoweroffOutlined,
 } from '@ant-design/icons'
 
 const { Header, Sider, Content } = Layout
@@ -42,6 +43,7 @@ export default function HomePage() {
       navigate('/login', { replace: true })
     } else {
       setChecking(false)
+      window.electronAPI.resizeWindow(1200, 800)
     }
   }, [navigate])
 
@@ -120,8 +122,16 @@ export default function HomePage() {
         >
           <Button
             type="text"
+            icon={<PoweroffOutlined />}
+            onClick={() => window.electronAPI.closeWindow()}
+          >
+            退出程序
+          </Button>
+          <Button
+            type="text"
             icon={<LogoutOutlined />}
             onClick={handleLogout}
+            style={{ marginLeft: 8 }}
           >
             退出登录
           </Button>
