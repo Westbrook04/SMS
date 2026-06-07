@@ -1,26 +1,33 @@
 import client from './client'
 
-// 1. »ñÈ¡ËùÓĞÑ§Éú
+// å­¦ç”Ÿè¾“å…¥ç±»å‹ï¼ˆæ–°å¢/ç¼–è¾‘æ—¶ä½¿ç”¨ï¼‰
+export interface StudentInput {
+  studentId?: string
+  studentName: string
+  studentClass?: { classId: string }
+}
+
+// 1. è·å–æ‰€æœ‰å­¦ç”Ÿ
 export const getAllStudents = () => {
-    return client.get('/api/students')
+  return client.get('/api/students')
 }
 
-// 2. ¸ù¾İÑ§ºÅ»ñÈ¡µ¥¸öÑ§Éú
+// 2. æ ¹æ®å­¦å·è·å–å•ä¸ªå­¦ç”Ÿ
 export const getStudentById = (studentId: string) => {
-    return client.get(`/api/students/${studentId}`)
+  return client.get(`/api/students/${studentId}`)
 }
 
-// 3. ĞÂÔöÑ§Éú
-export const addStudent = (student: { studentId: string; studentName: string }) => {
-    return client.post('/api/students', student)
+// 3. æ·»åŠ å­¦ç”Ÿ
+export const addStudent = (student: StudentInput) => {
+  return client.post('/api/students', student)
 }
 
-// 4. ĞŞ¸ÄÑ§Éú
-export const updateStudent = (studentId: string, student: { studentName: string }) => {
-    return client.put(`/api/students/${studentId}`, student)
+// 4. ä¿®æ”¹å­¦ç”Ÿ
+export const updateStudent = (studentId: string, student: StudentInput) => {
+  return client.put(`/api/students/${studentId}`, student)
 }
 
-// 5. É¾³ıÑ§Éú
+// 5. åˆ é™¤å­¦ç”Ÿ
 export const deleteStudent = (studentId: string) => {
-    return client.delete(`/api/students/${studentId}`)
+  return client.delete(`/api/students/${studentId}`)
 }
