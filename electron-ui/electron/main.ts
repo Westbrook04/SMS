@@ -4,9 +4,14 @@ import { join } from 'path'
 let mainWindow: BrowserWindow | null = null
 
 function createWindow() {
+    const iconPath = app.isPackaged
+        ? join(process.resourcesPath, 'icon.ico')
+        : join(app.getAppPath(), 'resources', 'icon.ico')
+
     mainWindow = new BrowserWindow({
         width: 465,
         height: 425,
+        icon: iconPath,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
             contextIsolation: true,
