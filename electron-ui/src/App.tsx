@@ -1,6 +1,8 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import SchoolPage from './pages/SchoolPage'
+import MajorPage from './pages/MajorPage'
 import ClassPage from './pages/ClassPage'
 import StudentPage from './pages/StudentPage'
 
@@ -10,8 +12,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<HomePage />}>
-          {/* 默认重定向到班级管理 */}
-          <Route index element={<Navigate to="/classes" replace />} />
+          <Route index element={<Navigate to="/schools" replace />} />
+          <Route path="schools" element={<SchoolPage />} />
+          <Route path="majors" element={<MajorPage />} />
           <Route path="classes" element={<ClassPage />} />
           <Route path="students" element={<StudentPage />} />
         </Route>

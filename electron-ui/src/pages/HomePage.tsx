@@ -4,6 +4,7 @@ import { Layout, Menu, Button, theme, Modal } from 'antd'
 import {
   TeamOutlined,
   BookOutlined,
+  BankOutlined,
   LogoutOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons'
@@ -51,8 +52,10 @@ export default function HomePage() {
   if (checking) return null
 
   // 当前选中的菜单项
-  const selectedKey = location.pathname.startsWith('/students')
-    ? 'students'
+  const path = location.pathname
+  const selectedKey = path.startsWith('/schools') ? 'schools'
+    : path.startsWith('/majors') ? 'majors'
+    : path.startsWith('/students') ? 'students'
     : 'classes'
 
   const handleLogout = () => {
@@ -71,8 +74,18 @@ export default function HomePage() {
 
   const menuItems = [
     {
-      key: 'classes',
+      key: 'schools',
+      icon: <BankOutlined />,
+      label: <NavLink to="/schools">学院管理</NavLink>,
+    },
+    {
+      key: 'majors',
       icon: <BookOutlined />,
+      label: <NavLink to="/majors">专业管理</NavLink>,
+    },
+    {
+      key: 'classes',
+      icon: <TeamOutlined />,
       label: <NavLink to="/classes">班级管理</NavLink>,
     },
     {
