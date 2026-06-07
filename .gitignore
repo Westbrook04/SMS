@@ -39,3 +39,6 @@ electron-ui/dist/
 
 ### 参考素材 ###
 参考素材/
+
+### 数据库配置（每个人本机密码不一样） ###
+SMS-backend/main/resources/application.yml
