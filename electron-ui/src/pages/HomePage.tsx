@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useNavigate, useLocation, NavLink } from 'react-router-dom'
 import { Layout, Menu, Button, theme } from 'antd'
 import {
@@ -34,13 +34,19 @@ export default function HomePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { token } = theme.useToken()
+  const [checking, setChecking] = useState(true)
 
   // 未登录则跳回登录页
   useEffect(() => {
     if (!checkAuth()) {
       navigate('/login', { replace: true })
+    } else {
+      setChecking(false)
     }
   }, [navigate])
+
+  // 还没确认登录状态，不渲染页面（防止闪一下）
+  if (checking) return null
 
   // 当前选中的菜单项
   const selectedKey = location.pathname.startsWith('/students')
