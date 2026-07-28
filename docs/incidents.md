@@ -41,3 +41,51 @@ cp SMS-backend/main/resources/application-example.yml SMS-backend/main/resources
 - `application.yml` 已加入 `.gitignore`，不会再被 git 跟踪
 - 每次新增配置项时，同步更新 `application-example.yml`
 - 克隆项目后第一步：`cp application-example.yml application.yml` 并修改密码
+
+
+## 2026-07-28: classApi.ts 为 GBK 编码导致前端构建失败
+
+### 现象
+
+`electron-vite build` 报错：
+
+```
+[UNLOADABLE_DEPENDENCY] Could not load src/api/classApi.ts
+stream did not contain valid UTF-8
+```
+
+### 原因
+
+`src/api/classApi.ts` 被保存成了 GBK 编码（Windows 上部分编辑器默认 ANSI/GBK），而 rolldown（electron-vite 的打包器）只接受 UTF-8。
+
+### 恢复
+
+```bash
+iconv -f GBK -t UTF-8 classApi.ts > classApi.ts.tmp && mv classApi.ts.tmp classApi.ts
+```
+
+内容不变，只转编码。
+
+### 预防
+
+- 编辑器（IDEA / VSCode）统一设置文件编码为 UTF-8
+- 构建报 "not valid UTF-8" 时，用 `file <文件>` 检查编码即可确认
+
+## 2026-07-28: Electron 无边框窗口 drag 区域收不到鼠标事件
+
+### 现象
+
+登录页吉祥物设计了"眼睛跟随鼠标"效果（监听 `window` 的 `mousemove`），但实际运行时眼睛完全不动。
+
+### 根因
+
+页面容器整体设置了 `WebkitAppRegion: 'drag'`。**Windows 上 Electron 把 drag 区域当原生标题栏处理**（系统命中测试直接返回 HTCAPTION），`mousemove` 等鼠标事件根本不会派发到渲染进程，页面监听自然失效。
+
+### 修复
+
+去掉容器的整体 drag，改为窗口顶部一条 30px 高的拖拽条（`position: absolute` 铺满顶部 + `WebkitAppRegion: 'drag'`），其余区域正常接收鼠标事件。关闭按钮保持 `no-drag` 且 `zIndex` 高于拖拽条。
+
+### 预防
+
+- 无边框窗口中，drag 区域只放在"标题栏"类纯装饰区域
+- 任何需要鼠标交互（hover、点击、移动监听）的区域，绝不能落在 drag 区域内

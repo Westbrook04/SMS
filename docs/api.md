@@ -4,7 +4,7 @@
 
 ## 鉴权说明
 
-除 `/api/auth/login` 外，所有接口需要在请求头中携带 Token：
+除 `/api/auth/**` 下的认证接口（登录、发送验证码）外，所有接口需要在请求头中携带 Token：
 
 ```
 Authorization: Bearer <token>
@@ -46,6 +46,77 @@ Token 有效期为 24 小时。
   "success": false,
   "data": null,
   "error": "用户名或密码错误"
+}
+```
+
+---
+
+## 手机验证码登录
+
+> 模拟环境：短信通道未接真实服务商，验证码打印在**后端控制台日志**中。
+> 前提是管理员账号已绑定手机号（`admin` 表 `phone` 字段）。
+
+### POST /api/auth/code/send
+
+发送登录手机验证码。验证码 5 分钟内有效，同一手机号 60 秒内不允许重复发送。
+
+**请求体：**
+```json
+{
+  "phone": "13800000000"
+}
+```
+
+**成功响应：**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "验证码已发送，5 分钟内有效"
+  },
+  "error": null
+}
+```
+
+**限流响应：**
+```json
+{
+  "success": false,
+  "data": null,
+  "error": "发送过于频繁，请 60 秒后再试"
+}
+```
+
+### POST /api/auth/login-by-code
+
+手机号 + 验证码登录。验证码一次性使用，验证成功后立即失效。
+
+**请求体：**
+```json
+{
+  "phone": "13800000000",
+  "code": "123456"
+}
+```
+
+**成功响应：**
+```json
+{
+  "success": true,
+  "data": {
+    "token": "b2f7c37582494f46875f872bfbc72f63",
+    "username": "admin"
+  },
+  "error": null
+}
+```
+
+**失败响应：**
+```json
+{
+  "success": false,
+  "data": null,
+  "error": "验证码错误或该手机号未绑定账号"
 }
 ```
 
