@@ -234,7 +234,9 @@ export default function LoginPage() {
 
   return (
     <div style={styles.container}>
-      {/* 左侧吉祥物面板（空白区域可拖拽窗口） */}
+      {/* 顶部拖拽条：拖动窗口用，zIndex 低于关闭按钮 */}
+      <div style={styles.dragBar} />
+      {/* 左侧吉祥物面板 */}
       <div style={styles.leftPanel}>
         <div style={styles.decoCircle1} />
         <div style={styles.decoCircle2} />
@@ -411,10 +413,22 @@ export default function LoginPage() {
 // 样式对象
 const styles: Record<string, React.CSSProperties> = {
   // 整体白底：窗口任意大小都不会再露出紫色背景
+  // 注意：容器不能再整体设 WebkitAppRegion: 'drag'——Windows 上 drag 区域
+  // 按原生标题栏处理，鼠标事件到不了页面，吉祥物眼睛就无法跟随
   container: {
     height: '100vh',
     display: 'flex',
     background: '#fff',
+    position: 'relative',
+  },
+  // 顶部拖拽条：代替原来的整容器 drag，用于拖动窗口
+  dragBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 30,
+    zIndex: 5,
     WebkitAppRegion: 'drag',
   } as any,
   leftPanel: {
