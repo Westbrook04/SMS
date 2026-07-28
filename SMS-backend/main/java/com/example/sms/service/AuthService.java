@@ -15,6 +15,7 @@ public class AuthService {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VerificationCodeService codeService;
 
     /** Token 存储: token -> token 信息（含创建时间） */
     private final Map<String, TokenInfo> tokenStore = new ConcurrentHashMap<>();
@@ -22,9 +23,11 @@ public class AuthService {
     /** Token 过期时间: 24 小时 */
     private static final long TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000L;
 
-    public AuthService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(AdminRepository adminRepository, PasswordEncoder passwordEncoder,
+                       VerificationCodeService codeService) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
+        this.codeService = codeService;
     }
 
     /**
@@ -42,10 +45,44 @@ public class AuthService {
             return null;
         }
 
-        // 3. 清理过期 token（防止内存泄漏）
+        // 3. 签发 token
+        return issueToken(admin.getUsername());
+    }
+
+    /**
+     * 发送登录验证码（委托给验证码服务）
+     * @return true 发送成功；false 被限流
+     */
+    public boolean sendLoginCode(String phone) {
+        return codeService.sendCode(phone);
+    }
+
+    /**
+     * 手机号 + 验证码登录
+     */
+    public LoginResult loginByPhone(String phone, String code) {
+        // 1. 校验验证码（失败直接拒绝，不查库，省一次查询）
+        if (!codeService.verifyCode(phone, code)) {
+            return null;
+        }
+
+        // 2. 查找该手机号绑定的管理员
+        Admin admin = adminRepository.findByPhone(phone).orElse(null);
+        if (admin == null) {
+            return null;
+        }
+
+        // 3. 签发 token
+        return issueToken(admin.getUsername());
+    }
+
+    /**
+     * 签发 token（两种登录方式共用的收尾逻辑）
+     */
+    private LoginResult issueToken(String username) {
+        // 清理过期 token（防止内存泄漏）
         cleanupExpiredTokens();
 
-        // 4. 生成 token
         String token = UUID.randomUUID().toString().replace("-", "");
         tokenStore.put(token, new TokenInfo(username, System.currentTimeMillis()));
 

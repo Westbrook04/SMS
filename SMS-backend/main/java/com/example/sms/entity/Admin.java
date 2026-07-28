@@ -17,4 +17,8 @@ public class Admin {
 
     @Column(nullable = false, length = 255)
     private String passwordHash;
+
+    /** 手机号，用于验证码登录；老数据可能为空，所以允许 null */
+    @Column(unique = true, length = 20)
+    private String phone;
 }
