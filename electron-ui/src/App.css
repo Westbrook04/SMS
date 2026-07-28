@@ -2,3 +2,53 @@ body{
     margin: 0;
     padding:0;
 }
+
+/* ===== 登录页：下划线风格输入框 ===== */
+.login-underline .ant-input-affix-wrapper {
+    border: none !important;
+    border-bottom: 1px solid #dfe3ea !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.login-underline .ant-input-affix-wrapper:hover {
+    border-bottom-color: #7f8cf5 !important;
+}
+.login-underline .ant-input-affix-wrapper-focused,
+.login-underline .ant-input-affix-wrapper:focus-within {
+    border-bottom-color: #5b6cff !important;
+    box-shadow: none !important;
+}
+.login-underline .ant-input-affix-wrapper-status-error {
+    border-bottom-color: #ff4d4f !important;
+}
+.login-underline .ant-input-prefix {
+    color: #b3b9c4;
+    margin-right: 8px;
+}
+
+/* ===== 登录页：吉祥物动画 ===== */
+/* 眼球跟随鼠标时的平滑过渡 */
+.mascot-pupil {
+    transition: transform 0.08s ease-out;
+}
+/* 眨眼动画：每 4.6s 快速闭合一次 */
+.mascot-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mascot-blink 4.6s infinite;
+}
+@keyframes mascot-blink {
+    0%, 93%, 100% { transform: scaleY(1); }
+    95.5% { transform: scaleY(0.1); }
+}
+/* 身体上下轻微浮动 */
+.mascot-float {
+    animation: mascot-float 3.2s ease-in-out infinite;
+}
+@keyframes mascot-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}

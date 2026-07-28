@@ -1,21 +1,21 @@
 import client from './client'
 
-// 1. »ñÈ¡ËùÓÐ°à¼¶
+// 1. èŽ·å–æ‰€æœ‰ç­çº§
 export const getAllClasses = () => {
     return client.get('/api/classes')
 }
 
-// 2. »ñÈ¡µ¥¸ö°à¼¶
+// 2. èŽ·å–å•ä¸ªç­çº§
 export const getClassById = (classId: string) => {
     return client.get(`/api/classes/${classId}`)
 }
 
-// 3. ÐÂÔö°à¼¶
+// 3. æ–°å¢žç­çº§
 export const addClass = (classData: { classId: string; className: string }) => {
     return client.post('/api/classes', classData)
 }
 
-// 4. É¾³ý°à¼¶
+// 4. åˆ é™¤ç­çº§
 export const deleteClass = (classId: string) => {
     return client.delete(`/api/classes/${classId}`)
 }

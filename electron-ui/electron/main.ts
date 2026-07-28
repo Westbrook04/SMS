@@ -9,8 +9,8 @@ function createWindow() {
         : join(app.getAppPath(), 'resources', 'icon.ico')
 
     mainWindow = new BrowserWindow({
-        width: 465,
-        height: 425,
+        width: 900,
+        height: 580,
         icon: iconPath,
         webPreferences: {
             preload: join(__dirname, '../preload/index.js'),
