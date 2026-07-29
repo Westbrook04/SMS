@@ -348,118 +348,38 @@ body{
         0 3px 8px rgba(38, 158, 105, 0.28);
 }
 
-/* ---------- 登录按钮：整页最清晰的光学玻璃胶囊 ---------- */
+/* ---------- 登录按钮：普通淡绿色，hover 轻微悬浮 ---------- */
 .login-btn.ant-btn {
-    position: relative;
-    overflow: hidden;
-    height: 48px;
-    border-radius: 999px !important;
+    height: 46px;
+    border-radius: 8px !important;
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 4px;
     color: #ffffff !important;
-    text-shadow: 0 1px 2px rgba(11, 105, 67, 0.3);
-    background:
-        radial-gradient(circle at 24% 0%, rgba(255, 255, 255, 0.72), transparent 34%),
-        radial-gradient(ellipse at 32% 72%, rgba(178, 240, 214, 0.45), transparent 60%),
-        linear-gradient(180deg,
-            rgba(111, 211, 168, 0.82) 0%,
-            rgba(48, 174, 119, 0.82) 58%,
-            rgba(35, 150, 99, 0.88) 100%) !important;
-    backdrop-filter: blur(22px) saturate(150%);
-    -webkit-backdrop-filter: blur(22px) saturate(150%);
-    border: 1px solid rgba(229, 255, 245, 0.92) !important;
-    box-shadow:
-        inset 0 2px 1px rgba(255, 255, 255, 0.75),
-        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
-        0 12px 28px rgba(38, 158, 105, 0.22),
-        0 2px 5px rgba(22, 92, 63, 0.16) !important;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    background: #52b788 !important;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(82, 183, 136, 0.25) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
-/* 沿上方曲率分布的白色镜面高光：固定不动，只随状态改变透明度 */
-.login-btn.ant-btn::before {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    left: 12%;
-    top: 2px;
-    width: 76%;
-    height: 46%;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.05));
-    filter: blur(1.5px);
-    opacity: 0.9;
-    transition: opacity 0.2s ease;
-}
-/* 流动光泽：斜切柔和光带，周期性扫过按钮表面。
-   只用 transform 做动画，跑在合成器线程上，不触发重排重绘 */
-.login-btn.ant-btn::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    top: -30%;
-    bottom: -30%;
-    left: 0;
-    width: 45%;
-    background: linear-gradient(100deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.06) 25%,
-        rgba(255, 255, 255, 0.45) 50%,
-        rgba(255, 255, 255, 0.06) 75%,
-        transparent 100%);
-    transform: translateX(-140%) skewX(-12deg);
-    animation: login-btn-sheen 4.2s ease-in-out infinite;
-    opacity: 0.9;
-}
-/* 光带只在周期前段扫过，其余时间停在按钮外，形成缓慢的流光节奏 */
-@keyframes login-btn-sheen {
-    0% { transform: translateX(-140%) skewX(-12deg); }
-    38%, 100% { transform: translateX(340%) skewX(-12deg); }
-}
-/* 文字压在高光层之上 */
-.login-btn.ant-btn span {
-    position: relative;
-    z-index: 1;
-}
-/* hover：上移 1px，阴影稍扩散，顶部高光提亮（光效的"动"交给 ::after 流光） */
+/* hover：上浮 2px，颜色略深、阴影略扩散 */
 .login-btn.ant-btn:not(:disabled):hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     color: #ffffff !important;
-    box-shadow:
-        inset 0 2px 1px rgba(255, 255, 255, 0.85),
-        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
-        0 16px 34px rgba(38, 158, 105, 0.28),
-        0 3px 7px rgba(22, 92, 63, 0.16) !important;
+    background: #489f77 !important;
+    box-shadow: 0 8px 18px rgba(82, 183, 136, 0.32) !important;
 }
-/* hover：整体上移、阴影扩散、顶部高光提亮（不再移动高光位置） */
-.login-btn.ant-btn:not(:disabled):hover::before {
-    opacity: 1;
-}
-/* active：下移 1px，阴影缩小，顶部高光变弱，形成按压感 */
+/* active：回到原位，阴影收回 */
 .login-btn.ant-btn:not(:disabled):active {
-    transform: translateY(1px);
-    box-shadow:
-        inset 0 2px 1px rgba(255, 255, 255, 0.55),
-        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
-        0 6px 14px rgba(38, 158, 105, 0.18),
-        0 1px 3px rgba(22, 92, 63, 0.14) !important;
+    transform: translateY(0);
+    background: #3d8f6a !important;
+    box-shadow: 0 2px 6px rgba(82, 183, 136, 0.25) !important;
 }
-.login-btn.ant-btn:not(:disabled):active::before {
-    opacity: 0.5;
-}
-/* loading/disabled：降低饱和度和高光，但仍保持玻璃结构 */
+/* loading/disabled：浅绿、去阴影 */
 .login-btn.ant-btn:disabled,
 .login-btn.ant-btn.ant-btn-loading {
-    color: rgba(255, 255, 255, 0.9) !important;
-    filter: saturate(0.72) brightness(0.98);
-}
-.login-btn.ant-btn:disabled::before,
-.login-btn.ant-btn.ant-btn-loading::before {
-    opacity: 0.45;
-}
-.login-btn.ant-btn:disabled::after,
-.login-btn.ant-btn.ant-btn-loading::after {
-    opacity: 0.4;
+    color: rgba(255, 255, 255, 0.85) !important;
+    background: #a3d9be !important;
+    box-shadow: none !important;
 }
 
 /* ---------- 发送验证码按钮：次级玻璃块 ---------- */
@@ -568,11 +488,8 @@ body{
         0 10px 20px rgba(52, 87, 70, 0.14);
 }
 
-/* 系统「减少动态效果」：停用按钮流光与面板切换动画（左侧粒子在 JS 里已做判断） */
+/* 系统「减少动态效果」：停用面板切换动画（左侧粒子在 JS 里已做判断） */
 @media (prefers-reduced-motion: reduce) {
-    .login-btn.ant-btn::after {
-        animation: none;
-    }
     .login-glass-tabs .ant-tabs-tabpane-active {
         animation: none;
     }
