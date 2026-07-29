@@ -89,3 +89,7 @@ iconv -f GBK -t UTF-8 classApi.ts > classApi.ts.tmp && mv classApi.ts.tmp classA
 
 - 无边框窗口中，drag 区域只放在"标题栏"类纯装饰区域
 - 任何需要鼠标交互（hover、点击、移动监听）的区域，绝不能落在 drag 区域内
+
+### 后续（2026-07-29）
+
+登录页 v3 重构（左右分栏 + 苹果毛玻璃控件）删除了吉祥物，眼球跟随代码随之移除；但本条的修复模式继续沿用——新版仍是顶部 30px 拖拽条（`.login-drag-bar`），关闭按钮保持 `no-drag` 且层级更高。

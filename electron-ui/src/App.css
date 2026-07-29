@@ -3,52 +3,540 @@ body{
     padding:0;
 }
 
-/* ===== 登录页：下划线风格输入框 ===== */
-.login-underline .ant-input-affix-wrapper {
-    border: none !important;
-    border-bottom: 1px solid #dfe3ea !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-.login-underline .ant-input-affix-wrapper:hover {
-    border-bottom-color: #7f8cf5 !important;
-}
-.login-underline .ant-input-affix-wrapper-focused,
-.login-underline .ant-input-affix-wrapper:focus-within {
-    border-bottom-color: #5b6cff !important;
-    box-shadow: none !important;
-}
-.login-underline .ant-input-affix-wrapper-status-error {
-    border-bottom-color: #ff4d4f !important;
-}
-.login-underline .ant-input-prefix {
-    color: #b3b9c4;
-    margin-right: 8px;
+/* ============================================================
+   登录页 v3：左右 50/50 分栏 + 苹果式毛玻璃控件
+   - 左侧：灰绿氛围（光束/植物影子/浮尘/鼠标柔光），overflow 裁切在中线以左
+   - 右侧：珍珠白安静背景，控件直接排列，无大号玻璃卡片
+   - 玻璃控件统一四层：半透明基底 / 边缘厚度 / 局部高光 / 悬浮阴影
+   ============================================================ */
+
+/* ---------- 整体布局 ---------- */
+.login-container {
+    height: 100vh;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    background: #EAF1ED;
 }
 
-/* ===== 登录页：吉祥物动画 ===== */
-/* 眼球跟随鼠标时的平滑过渡 */
-.mascot-pupil {
-    transition: transform 0.08s ease-out;
+/* 顶部拖拽条：drag 区域收不到鼠标事件，所以只留顶部一条 */
+.login-drag-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    z-index: 5;
+    -webkit-app-region: drag;
 }
-/* 眨眼动画：每 4.6s 快速闭合一次 */
-.mascot-eye {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: mascot-blink 4.6s infinite;
+
+/* ---------- 左侧视觉面板 ---------- */
+.login-left {
+    width: 50%;
+    position: relative;
+    overflow: hidden;   /* 关键：光束/影子/浮尘/柔光全部裁在中线以左 */
+    background:
+        radial-gradient(85% 62% at 88% 0%, rgba(255, 255, 255, 0.62), transparent 56%),
+        radial-gradient(70% 50% at 6% 100%, rgba(255, 255, 255, 0.30), transparent 60%),
+        linear-gradient(155deg, #EAF1ED 0%, #C9DED4 48%, #BBD8CA 100%);
 }
-@keyframes mascot-blink {
-    0%, 93%, 100% { transform: scaleY(1); }
-    95.5% { transform: scaleY(0.1); }
+
+/* 自然光束：从右上向左下斜切，一宽一窄两条 */
+.login-beam {
+    position: absolute;
+    top: -35%;
+    height: 175%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: rotate(33deg);
+    transform-origin: top center;
 }
-/* 身体上下轻微浮动 */
-.mascot-float {
-    animation: mascot-float 3.2s ease-in-out infinite;
+.login-beam-main { right: 24%; width: 150px; filter: blur(20px); opacity: 0.8; }
+.login-beam-side { right: 6%; width: 60px; filter: blur(14px); opacity: 0.55; }
+
+/* 植物影子：SVG 叶片簇 + 重度模糊，像光透过枝叶投下的影 */
+.leaf-shadow { position: absolute; pointer-events: none; }
+.leaf-shadow-tl { top: -46px; left: -52px; width: 250px; transform: rotate(16deg); filter: blur(15px); opacity: 0.15; }
+.leaf-shadow-bl { bottom: -56px; left: -18px; width: 230px; transform: rotate(158deg); filter: blur(18px); opacity: 0.11; }
+
+/* 鼠标柔光：位置由 JS 带惯性更新 */
+.login-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.14) 45%, transparent 70%);
+    filter: blur(8px);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    transform: translate3d(220px, 160px, 0);
+    will-change: transform;
 }
-@keyframes mascot-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+/* 浮尘画布：只绘制，不吃鼠标事件 */
+.login-dust {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* 左侧标语 */
+.login-left-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14%;
+    text-align: center;
+    pointer-events: none;
+}
+.login-left-title {
+    font-family: "STSong", "SimSun", serif;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    color: #24402f;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.login-left-subtitle {
+    margin-top: 12px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(36, 64, 47, 0.52);
+}
+
+/* ---------- 右侧表单面板 ---------- */
+.login-right {
+    width: 50%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgba(48, 112, 82, 0.08);   /* 清楚的直线分界 */
+    background:
+        radial-gradient(circle at 28% 18%, rgba(207, 242, 228, 0.18), transparent 30%),
+        linear-gradient(145deg, #fbfcfa 0%, #f2f5f2 100%);
+}
+
+.login-form-wrap {
+    width: 340px;
+    -webkit-app-region: no-drag;
+}
+
+.login-title { font-size: 26px; font-weight: 700; color: #1e3a2a; margin: 0; }
+.login-subtitle { font-size: 13px; color: #68816f; margin: 8px 0 22px; }
+
+.login-captcha-row { display: flex; gap: 12px; align-items: center; }
+.login-captcha-input { flex: 1; }
+.login-remember-row { display: flex; justify-content: space-between; align-items: center; }
+.login-forgot { font-size: 13px; color: #3d6b52; }
+.login-forgot:hover { color: #1f8f5c; }
+
+/* ---------- 玻璃输入框 ---------- */
+.login-glass .ant-input-affix-wrapper {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.78) 0%,
+        rgba(246, 252, 249, 0.52) 46%,
+        rgba(226, 241, 234, 0.42) 100%) !important;
+    backdrop-filter: blur(24px) saturate(135%);
+    -webkit-backdrop-filter: blur(24px) saturate(135%);
+    border: 1px solid rgba(255, 255, 255, 0.88) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.98),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.12),
+        0 10px 24px rgba(52, 87, 70, 0.11),
+        0 2px 5px rgba(52, 87, 70, 0.07);
+    transition: box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+/* 顶部弧形镜面高光，压在文字下层 */
+.login-glass .ant-input-affix-wrapper::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 8%;
+    top: 1px;
+    width: 64%;
+    height: 42%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.08));
+    filter: blur(2px);
+    opacity: 0.72;
+}
+/* 左侧图标旁的极淡青绿折射 */
+.login-glass .ant-input-affix-wrapper::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 0;
+    top: 12%;
+    width: 64px;
+    height: 76%;
+    background: radial-gradient(ellipse at center, rgba(126, 211, 175, 0.20), transparent 70%);
+    filter: blur(4px);
+}
+/* 文字与图标始终在高光/折射层之上 */
+.login-glass .ant-input-affix-wrapper .ant-input,
+.login-glass .ant-input-affix-wrapper .ant-input-prefix,
+.login-glass .ant-input-affix-wrapper .ant-input-suffix {
+    position: relative;
+    z-index: 1;
+}
+/* hover：上缘亮度略升 */
+.login-glass .ant-input-affix-wrapper:hover {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.86) 0%,
+        rgba(248, 253, 250, 0.60) 46%,
+        rgba(230, 243, 237, 0.50) 100%) !important;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.12),
+        0 12px 26px rgba(52, 87, 70, 0.13),
+        0 2px 5px rgba(52, 87, 70, 0.07);
+}
+/* focus：浅玉绿边框 + 很薄的内侧光晕，禁止粗外发光 */
+.login-glass .ant-input-affix-wrapper-focused,
+.login-glass .ant-input-affix-wrapper:focus-within {
+    border-color: rgba(126, 201, 165, 0.95) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(126, 201, 165, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.98),
+        0 10px 24px rgba(52, 87, 70, 0.12),
+        0 2px 5px rgba(52, 87, 70, 0.07);
+}
+.login-glass .ant-input-affix-wrapper-status-error {
+    border-color: rgba(214, 88, 74, 0.85) !important;
+}
+.login-glass .ant-input-affix-wrapper input {
+    background: transparent !important;
+    color: #24402f;
+}
+.login-glass .ant-input-affix-wrapper input::placeholder {
+    color: #9db0a4;
+}
+.login-glass .ant-input-prefix {
+    color: #6b8a79;
+    margin-right: 8px;
+}
+/* 密码框的小眼睛图标 */
+.login-glass .ant-input-suffix {
+    color: #8aa395;
+}
+/* 表单校验错误提示 */
+.login-glass .ant-form-item-explain-error {
+    color: #c94f42;
+}
+
+/* ---------- 验证码图片的玻璃外壳（与输入框同配方） ---------- */
+.login-captcha-glass {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    padding: 3px;
+    cursor: pointer;
+    border-radius: 14px;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.78) 0%,
+        rgba(246, 252, 249, 0.52) 46%,
+        rgba(226, 241, 234, 0.42) 100%);
+    backdrop-filter: blur(24px) saturate(135%);
+    -webkit-backdrop-filter: blur(24px) saturate(135%);
+    border: 1px solid rgba(255, 255, 255, 0.88);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.98),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.12),
+        0 10px 24px rgba(52, 87, 70, 0.11),
+        0 2px 5px rgba(52, 87, 70, 0.07);
+    transition: box-shadow 0.2s ease;
+}
+.login-captcha-glass::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 8%;
+    top: 1px;
+    width: 64%;
+    height: 40%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08));
+    filter: blur(2px);
+    opacity: 0.7;
+}
+.login-captcha-glass:hover {
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.12),
+        0 12px 26px rgba(52, 87, 70, 0.14),
+        0 2px 5px rgba(52, 87, 70, 0.07);
+}
+.login-captcha-glass canvas {
+    display: block;
+    width: 92px;
+    height: 37px;
+    border-radius: 10px;
+}
+
+/* ---------- 登录方式 Tabs ---------- */
+.login-glass-tabs .ant-tabs-nav {
+    margin-bottom: 20px;
+}
+.login-glass-tabs .ant-tabs-nav::before {
+    border-bottom: 1px solid rgba(48, 112, 82, 0.10) !important;
+}
+.login-glass-tabs .ant-tabs-tab {
+    color: #7b8b80;
+    transition: color 0.2s ease;
+}
+.login-glass-tabs .ant-tabs-tab:hover {
+    color: #2c5940;
+}
+.login-glass-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #1e4732 !important;
+    font-weight: 600;
+    text-shadow: none;
+}
+/* 液态玻璃下划线：上亮下暗的厚度感，不是纯色 2px 线 */
+.login-glass-tabs .ant-tabs-ink-bar {
+    height: 4px !important;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #b9ecd4 0%, #34b277 55%, #1f8f5c 100%) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        inset 0 -1px 1px rgba(11, 105, 67, 0.35),
+        0 2px 4px rgba(38, 158, 105, 0.25);
+}
+
+/* ---------- 复选框：小型翡翠玻璃方块 ---------- */
+.login-glass .ant-checkbox-wrapper {
+    color: #3c5346;
+    font-size: 13px;
+}
+.login-glass .ant-checkbox-inner {
+    border-radius: 5px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(238, 246, 241, 0.6));
+    border: 1px solid rgba(143, 175, 158, 0.6);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 3px 8px rgba(52, 87, 70, 0.10);
+}
+.login-glass .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+    border-color: rgba(126, 201, 165, 0.9);
+}
+.login-glass .ant-checkbox-checked .ant-checkbox-inner {
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.85) 0%, transparent 42%),
+        linear-gradient(180deg, rgba(111, 211, 168, 0.95), rgba(35, 150, 99, 0.95));
+    border-color: rgba(229, 255, 245, 0.95);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -1px 1px rgba(11, 105, 67, 0.3),
+        0 3px 8px rgba(38, 158, 105, 0.28);
+}
+
+/* ---------- 登录按钮：整页最清晰的光学玻璃胶囊 ---------- */
+.login-btn.ant-btn {
+    position: relative;
+    overflow: hidden;
+    height: 48px;
+    border-radius: 999px !important;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(11, 105, 67, 0.3);
+    background:
+        radial-gradient(circle at 24% 0%, rgba(255, 255, 255, 0.72), transparent 34%),
+        linear-gradient(180deg,
+            rgba(111, 211, 168, 0.82) 0%,
+            rgba(48, 174, 119, 0.82) 58%,
+            rgba(35, 150, 99, 0.88) 100%) !important;
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid rgba(229, 255, 245, 0.92) !important;
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.75),
+        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
+        0 12px 28px rgba(38, 158, 105, 0.22),
+        0 2px 5px rgba(22, 92, 63, 0.16) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+/* 沿上方曲率分布的白色镜面高光 */
+.login-btn.ant-btn::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 12%;
+    top: 2px;
+    width: 76%;
+    height: 46%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.05));
+    filter: blur(1.5px);
+    opacity: 0.9;
+    transition: left 0.25s ease, opacity 0.2s ease;
+}
+/* 内部一小片淡青绿折射 */
+.login-btn.ant-btn::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 18%;
+    top: 52%;
+    width: 34%;
+    height: 38%;
+    background: radial-gradient(ellipse, rgba(178, 240, 214, 0.5), transparent 70%);
+    filter: blur(4px);
+    opacity: 0.6;
+}
+/* 文字压在高光层之上 */
+.login-btn.ant-btn span {
+    position: relative;
+    z-index: 1;
+}
+/* hover：上移 1px，高光横向轻微滑动，阴影稍扩散 */
+.login-btn.ant-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    color: #ffffff !important;
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.85),
+        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
+        0 16px 34px rgba(38, 158, 105, 0.28),
+        0 3px 7px rgba(22, 92, 63, 0.16) !important;
+}
+.login-btn.ant-btn:not(:disabled):hover::before {
+    left: 17%;
+}
+/* active：下移 1px，阴影缩小，顶部高光变弱，形成按压感 */
+.login-btn.ant-btn:not(:disabled):active {
+    transform: translateY(1px);
+    box-shadow:
+        inset 0 2px 1px rgba(255, 255, 255, 0.55),
+        inset 0 -2px 2px rgba(11, 105, 67, 0.26),
+        0 6px 14px rgba(38, 158, 105, 0.18),
+        0 1px 3px rgba(22, 92, 63, 0.14) !important;
+}
+.login-btn.ant-btn:not(:disabled):active::before {
+    opacity: 0.5;
+}
+/* loading/disabled：降低饱和度和高光，但仍保持玻璃结构 */
+.login-btn.ant-btn:disabled,
+.login-btn.ant-btn.ant-btn-loading {
+    color: rgba(255, 255, 255, 0.9) !important;
+    filter: saturate(0.72) brightness(0.98);
+}
+.login-btn.ant-btn:disabled::before,
+.login-btn.ant-btn.ant-btn-loading::before {
+    opacity: 0.45;
+}
+
+/* ---------- 发送验证码按钮：次级玻璃块 ---------- */
+.login-send-btn.ant-btn {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 112px;
+    height: 40px;
+    border-radius: 14px !important;
+    font-size: 13px;
+    color: #2f5d45 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(238, 247, 242, 0.5)) !important;
+    backdrop-filter: blur(18px) saturate(135%);
+    -webkit-backdrop-filter: blur(18px) saturate(135%);
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.10),
+        0 6px 14px rgba(52, 87, 70, 0.10),
+        0 2px 4px rgba(52, 87, 70, 0.06) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+.login-send-btn.ant-btn::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 10%;
+    top: 1px;
+    width: 66%;
+    height: 42%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.08));
+    filter: blur(2px);
+    opacity: 0.7;
+}
+.login-send-btn.ant-btn span {
+    position: relative;
+    z-index: 1;
+}
+.login-send-btn.ant-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    color: #1f8f5c !important;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(48, 112, 82, 0.10),
+        0 10px 20px rgba(52, 87, 70, 0.13),
+        0 2px 5px rgba(52, 87, 70, 0.07) !important;
+}
+/* 倒计时禁用态：降饱和但保持玻璃结构 */
+.login-send-btn.ant-btn:disabled {
+    color: #8ba295 !important;
+    filter: saturate(0.75);
+}
+
+/* ---------- 关闭按钮：小型圆形透明玻璃 ---------- */
+.login-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    overflow: hidden;
+    color: #41604e;
+    font-size: 13px;
+    line-height: 1;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(240, 248, 243, 0.4));
+    backdrop-filter: blur(12px) saturate(135%);
+    -webkit-backdrop-filter: blur(12px) saturate(135%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 6px 14px rgba(52, 87, 70, 0.10);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    -webkit-app-region: no-drag;
+}
+.login-close::before {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    left: 18%;
+    top: 1px;
+    width: 64%;
+    height: 46%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.05));
+    filter: blur(1px);
+    opacity: 0.8;
+}
+.login-close span {
+    position: relative;
+    z-index: 1;
+}
+/* hover：轻微提亮并上浮 1px，不放大 */
+.login-close:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(244, 250, 246, 0.55));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        0 10px 20px rgba(52, 87, 70, 0.14);
 }
